@@ -1,0 +1,97 @@
+*************************
+GPU Architect/Performance Engineer: Profiling and optimizing power/performance at the hardware and driver levels::basic project with code on colab
+
+Gemini said
+To step into a GPU Architect or Performance Engineer role, you must move beyond just writing code that "works" and start measuring how that code interacts with the physical silicon.
+
+In this project, we will build a Power-Aware Matrix Multiplication Profiler. We will use the NVML (NVIDIA Management Library) to poll the GPU's power sensors and NVIDIA Nsight Compute to look at hardware-level bottlenecks.
+
+1. Setting Up the Environment
+In Colab, you need a GPU (T4 or L4). Use this cell to install the necessary profiling tools that aren't there by default.
+
+Bash
+# Install Nsight Compute and Nsight Systems
+!apt-get install -y nsight-compute nsight-systems
+2. The Project: Power & Performance Profiler
+We will create a C++ program that uses NVML to monitor power draw in a background thread while a heavy kernel (Matrix Multiplication) runs.
+
+Implementation: power_perf_study.cu
+This code launches a kernel and samples the GPU power every 1ms.
+
+C++
+%%writefile power_perf.cu
+#include <iostream>
+#include <cuda_runtime.h>
+#include <nvml.h>
+#include <thread>
+#include <vector>
+#include <atomic>
+
+#define CHECK_CUDA(call) { cudaError_t err = call; if (err != cudaSuccess) { std::cerr << "CUDA Error: " << cudaGetErrorString(err) << std::endl; exit(1); } }
+#define CHECK_NVML(call) { nvmlReturn_t err = call; if (err != NVML_SUCCESS) { std::cerr << "NVML Error: " << nvmlErrorString(err) << std::endl; exit(1); } }
+
+// A high-intensity kernel to stress the GPU
+__global__ void intenseKernel(float* A, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        float val = A[idx];
+        for (int i = 0; i < 10000; ++i) { // High arithmetic intensity
+            val = tanf(acosf(fminf(fmaxf(val, -1.0f), 1.0f)));
+        }
+        A[idx] = val;
+    }
+}
+
+void monitorPower(std::atomic<bool>& stop, std::vector<unsigned int>& powerSamples) {
+    nvmlDevice_t device;
+    CHECK_NVML(nvmlDeviceGetHandleByIndex(0, &device));
+    while (!stop) {
+        unsigned int power;
+        nvmlDeviceGetPowerUsage(device, &power); // returns milliwatts
+        powerSamples.push_back(power);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+int main() {
+    int n = 1 << 20;
+    float *d_A;
+    CHECK_CUDA(cudaMalloc(&d_A, n * sizeof(float)));
+
+    nvmlInit();
+    std::atomic<bool> stop(false);
+    std::vector<unsigned int> samples;
+    
+    std::thread t(monitorPower, std::ref(stop), std::ref(samples));
+
+    intenseKernel<<<n/256, 256>>>(d_A, n);
+    cudaDeviceSynchronize();
+
+    stop = true;
+    t.join();
+
+    unsigned long long sum = 0;
+    for (auto p : samples) sum += p;
+    std::cout << "Avg Power during Kernel: " << (sum / samples.size()) / 1000.0 << " Watts" << std::endl;
+
+    nvmlShutdown();
+    cudaFree(d_A);
+    return 0;
+}
+3. Profiling at the Driver/Hardware Level
+To be a performance engineer, you need to understand the Roofline Model. This shows whether your kernel is limited by Memory Bandwidth (moving data) or Compute Throughput (math operations).
+
+Run the Profiler in Colab:
+Execute this cell to get a hardware-level report of your kernel’s efficiency.
+
+Bash
+!nvcc -o power_perf power_perf.cu -lnvidia-ml
+!ncu --metrics sm__throughput.avg,dram__throughput.avg,gpu__compute_memory_throughput.avg ./power_perf
+4. Architectural Analysis Guide
+When analyzing these results, here is what a GPU Architect looks for:
+
+Observation	Hardware/Driver Root Cause	Potential Optimization
+Low SM Throughput	Divergent branches in code causing "Warp Stall".	Flatten if/else logic to use ternary operators or bitmasking.
+High DRAM Throughput	Not reusing data; hitting VRAM too often.	Implement L1/Shared Memory Tiling.
+High Power spikes	Massive simultaneous global memory fetches.	Stagger memory requests to smooth out power delivery (DVFS).
+Under-utilization	Kernel doesn't have enough threads to hide latency.	Increase grid size or decrease register usage per thread.
