@@ -1,0 +1,69 @@
+GPU Architect/Performance Engineer: Profiling and optimizing power/performance at the hardware and driver levels.
+*********************
+GPU Architect/Performance Engineer: Profiling and optimizing power/performance at the hardware and driver levels.
+GPU Architects and Performance Engineers operate at the intersection of hardware and software to maximize the efficiency of graphics and compute units. Their work involves characterizing system behavior—ranging from idle to active states—to identify bottlenecks and drive "speed-of-light" optimizations for applications like AI, gaming, and high-performance computing. 
+NVIDIA Developer
+NVIDIA Developer
+ +4
+Core Responsibilities
+Hardware-Software Co-Design: Collaborating with silicon architects and driver teams to explore trade-offs between performance, area, and power metrics for next-generation GPUs.
+Performance Modeling: Developing cycle-approximate or cycle-accurate C++/Python models to simulate hardware behavior and validate new architectural features before they are built in silicon.
+Bottleneck Analysis: Identifying limiters in compute throughput, memory bandwidth, or interconnects (e.g., NVLink, PCIe) using telemetry data and firmware traces.
+Driver & Kernel Optimization: Developing critical driver software and custom high-performance kernels (e.g., using CUDA, Triton, or HIP) to improve hardware utilization.
+Power Management: Implementing and verifying features like DVFS (Dynamic Voltage and Frequency Scaling), P-states, and thermal throttling to optimize power-per-watt. 
+AMD Careers
+AMD Careers
+ +7
+Essential Profiling & Optimization Tools
+System-Wide Profilers: Tools like NVIDIA Nsight Systems and Intel VTune Profiler provide a holistic view of CPU-GPU interactions and identify if an application is compute-bound or memory-bound.
+Kernel-Level Analyzers: NVIDIA Nsight Compute and AMD uProf offer detailed instruction-level metrics and hardware counter analysis within specific GPU kernels.
+Monitoring & Debugging: Lower-level utilities like nvidia-smi or nvtop for real-time memory and core utilization, and CUDA-GDB for on-hardware debugging.
+Power & Hardware Control: Specialized software like MSI Afterburner for undervolting/overclocking and vendor-specific tools for analyzing P-states and package power limits. 
+NVIDIA Developer
+NVIDIA Developer
+ +5
+Key Skills
+Programming: Mastery of C/C++ for performance modeling and Python for data analysis and automation.
+Architecture Knowledge: Deep understanding of the graphics pipeline, memory hierarchies (L1/L2 caches, HBM), and SIMD/warp scheduling.
+Mathematical Foundations: Familiarity with parallel algorithms, numerical precision (FP8/INT8), and workload characterization for Large Language Models (LLMs). 
+Greenhouse
+Greenhouse
+ +5
+
+****************************
+
+For those specializing in GPU architecture and performance engineering, tutorials range from foundational hardware principles to advanced driver and kernel optimization.
+Foundational GPU Architecture
+GPU Architectures and Programming (NPTEL): A comprehensive 12-week academic course covering streaming multiprocessors, cache hierarchy, and the graphics pipeline.
+Arm Mali GPU Training: A specialized series focusing on mobile GPU architecture, hardware shader cores, and rendering pipelines.
+Understanding GPU Architecture & Execution Model: A technical deep dive into hardware hierarchy, warp divergence, and memory coalescing. 
+Arm Developer
+Arm Developer
+ +4
+Performance Engineering & Profiling
+GPU Performance Engineering (NHR@FAU): An advanced course using NVIDIA Nsight Systems and Nsight Compute to identify application bottlenecks through resource-based models.
+AI Systems Performance Engineering (O'Reilly): Focuses on the Roofline Model to determine if workloads are compute-bound or memory-bound.
+Deep Learning Performance (NVIDIA Docs): Official documentation and tutorials on optimizing Tensor Cores, mixed-precision training, and CUDA Graphs. 
+NHR@FAU
+NHR@FAU
+ +3
+Vendor-Specific Platforms
+AMD ROCm Training Videos: Tutorials on the HIP programming language, Omniperf for roofline analysis, and porting CUDA code to AMD GPUs.
+CUDA Programming Course (YouTube): A practical guide to setting up the CUDA Toolkit and writing high-performance C++ kernels.
+AI Infrastructure Learning Track (GitHub): A community-driven curriculum covering inter-GPU communication (NCCL) and tensor parallelism. 
+YouTube
+YouTube
+ +4
+Advanced Optimization Workshops 
+GPU Optimization Workshop (YouTube): Features experts from OpenAI and NVIDIA discussing latencies and cost-efficiency in data center environments.
+Unlocking Performance with CUDA Tile: A technical session on OpenAI Triton backends and tile programming for peak performance. 
+YouTube
+YouTube
+ +2
+
+
+****************************
+https://onlinecourses.nptel.ac.in/noc26_cs43/preview
+https://developer.arm.com/Additional%20Resources/Video%20Tutorials/Arm%20Mali%20GPU%20Training%20-%20EP1-3
+https://eunomia.dev/others/cuda-tutorial/04-gpu-architecture/
+******************
